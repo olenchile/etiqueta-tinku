@@ -5,17 +5,17 @@ import { motion } from "framer-motion";
 import { Download, Loader2, FileText } from "lucide-react";
 
 /* ─────────────────────────────────────────────────────────────
-   Exporta etiquetas ovales con la imagen original como data-URI
-   Formato: hoja A4 con etiquetas centradas
+   Exporta etiquetas con imagen original + overlay tipográfico
+   El limón NO se modifica — solo texto y logo mejorados
    ───────────────────────────────────────────────────────────── */
 
 async function buildPrintHTML(drinks: string[], copiesEach: number): Promise<string> {
-  /* ── Imagen etiqueta como data-URI (base64) ─────────────── */
+  /* ── Imagen etiqueta como base64 ────────────────────────── */
   let imgDataURI = "";
   try {
-    const res    = await fetch("/etiqueta-ref.jpeg");
-    const blob   = await res.blob();
-    imgDataURI   = await new Promise<string>((resolve) => {
+    const res  = await fetch("/etiqueta-ref.jpeg");
+    const blob = await res.blob();
+    imgDataURI = await new Promise<string>((resolve) => {
       const reader = new FileReader();
       reader.onloadend = () => resolve(reader.result as string);
       reader.readAsDataURL(blob);
@@ -24,17 +24,67 @@ async function buildPrintHTML(drinks: string[], copiesEach: number): Promise<str
     imgDataURI = "/etiqueta-ref.jpeg";
   }
 
-  /* ── Genera HTML de una etiqueta oval ───────────────────── */
-  const etiquetaHTML = () => `
+  /* ── Genera HTML de una etiqueta con overlay ────────────── */
+  const etiquetaHTML = (drink: string) => {
+    const id = drink.replace(/\s/g, "_");
+    return `
     <div class="etiqueta-wrap">
       <div class="etiqueta">
-        <img src="${imgDataURI}" alt="Etiqueta Tinkubar" class="etiqueta-img" />
+        <!-- Imagen original del limón (sin modificar) -->
+        <img src="${imgDataURI}" alt="Etiqueta" class="etiqueta-img" />
+
+        <!-- Overlay superior: texto curvo premium -->
+        <div class="overlay-top">
+          <svg viewBox="0 0 200 70" class="svg-label" overflow="visible">
+            <defs>
+              <path id="arc_${id}" d="M 15,58 A 85,85 0 0,1 185,58"/>
+              <filter id="ts_${id}">
+                <feDropShadow dx="0" dy="1" stdDeviation="1" flood-color="rgba(0,0,0,0.15)"/>
+              </filter>
+            </defs>
+            <text font-family="'Playfair Display', 'Times New Roman', Georgia, serif"
+              font-size="24" font-weight="700" font-style="italic"
+              fill="#1a2040" letter-spacing="2" filter="url(#ts_${id})">
+              <textPath href="#arc_${id}" startOffset="50%" text-anchor="middle">
+                ${drink}
+              </textPath>
+            </text>
+          </svg>
+        </div>
+
+        <!-- Overlay inferior: logo + Restobar TINKU rediseñado -->
+        <div class="overlay-bottom">
+          <svg viewBox="0 0 80 44" class="svg-logo">
+            <rect x="28" y="22" width="24" height="14" rx="2"
+              fill="none" stroke="#1a2040" stroke-width="1.6"/>
+            <path d="M52 25 Q58 25 58 30 Q58 35 52 35"
+              fill="none" stroke="#1a2040" stroke-width="1.4"/>
+            <path d="M34 20 Q33 16 35 13" stroke="#1a2040" stroke-width="1.1"
+              fill="none" stroke-linecap="round"/>
+            <path d="M40 19 Q39 15 41 12" stroke="#1a2040" stroke-width="1.1"
+              fill="none" stroke-linecap="round"/>
+            <path d="M46 20 Q45 16 47 13" stroke="#1a2040" stroke-width="1.1"
+              fill="none" stroke-linecap="round"/>
+            <circle cx="14" cy="14" r="5" fill="none" stroke="#1a2040" stroke-width="1.4"/>
+            <path d="M14 19 L14 30 Q14 33 10 35"
+              stroke="#1a2040" stroke-width="1.4" fill="none" stroke-linecap="round"/>
+            <path d="M14 24 L20 22"
+              stroke="#1a2040" stroke-width="1.4" fill="none" stroke-linecap="round"/>
+            <path d="M14 30 L18 37"
+              stroke="#1a2040" stroke-width="1.4" fill="none" stroke-linecap="round"/>
+          </svg>
+          <div class="footer-text">
+            <div class="footer-restobar">Restobar</div>
+            <div class="footer-tinku">TINKU</div>
+          </div>
+        </div>
       </div>
     </div>`;
+  };
 
   /* ── Todas las etiquetas ────────────────────────────────── */
-  const allLabels = drinks.flatMap(() =>
-    Array.from({ length: copiesEach }, () => etiquetaHTML())
+  const allLabels = drinks.flatMap((d) =>
+    Array.from({ length: copiesEach }, () => etiquetaHTML(d))
   ).join("\n");
 
   return `<!DOCTYPE html>
@@ -55,7 +105,6 @@ async function buildPrintHTML(drinks: string[], copiesEach: number): Promise<str
     @page { size: A4 portrait; margin: 10mm; }
     body { background: #1a1208; font-family: 'Playfair Display', Georgia, serif; }
 
-    /* Barra superior */
     .print-bar {
       position: fixed; top: 0; left: 0; right: 0;
       background: rgba(26,18,8,0.97);
@@ -77,51 +126,88 @@ async function buildPrintHTML(drinks: string[], copiesEach: number): Promise<str
     }
     .spacer { height: 60px; }
 
-    /* Grid de etiquetas — 2 por fila en A4 */
     .grid-etiquetas {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 8mm;
-      padding: 4mm;
-      justify-content: center;
-      align-items: flex-start;
+      display: flex; flex-wrap: wrap;
+      gap: 8mm; padding: 4mm;
+      justify-content: center; align-items: flex-start;
     }
 
-    /* Wrapper */
     .etiqueta-wrap {
       display: inline-block;
-      page-break-inside: avoid;
-      break-inside: avoid;
+      page-break-inside: avoid; break-inside: avoid;
     }
 
-    /* Etiqueta oval: 7cm × 10cm */
+    /* Etiqueta oval 7cm × 10cm */
     .etiqueta {
       position: relative;
-      width: 7cm;
-      height: 10cm;
+      width: 7cm; height: 10cm;
       border-radius: 50%;
       overflow: hidden;
       -webkit-print-color-adjust: exact !important;
       print-color-adjust: exact !important;
-      color-adjust: exact !important;
     }
 
-    /* Imagen original sin modificar, centrada y cubriendo el oval */
+    /* Imagen original */
     .etiqueta-img {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-      object-position: center center;
+      position: absolute; inset: 0;
+      width: 100%; height: 100%;
+      object-fit: cover; object-position: center;
       display: block;
       -webkit-print-color-adjust: exact !important;
       print-color-adjust: exact !important;
     }
 
-    /* PRINT */
+    /* Overlay superior — cubre zona de texto original */
+    .overlay-top {
+      position: absolute; top: 0; left: 0; right: 0;
+      height: 28%;
+      display: flex; align-items: center; justify-content: center;
+      background: linear-gradient(to bottom,
+        rgba(242,237,224,0.92) 0%,
+        rgba(242,237,224,0.75) 70%,
+        transparent 100%) !important;
+      -webkit-print-color-adjust: exact !important;
+      print-color-adjust: exact !important;
+    }
+    .svg-label { width: 90%; height: auto; }
+
+    /* Overlay inferior — cubre zona de logo original */
+    .overlay-bottom {
+      position: absolute; bottom: 0; left: 0; right: 0;
+      height: 26%;
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: flex-end;
+      padding-bottom: 6%;
+      background: linear-gradient(to top,
+        rgba(200,220,240,0.88) 0%,
+        rgba(200,220,240,0.65) 60%,
+        transparent 100%) !important;
+      -webkit-print-color-adjust: exact !important;
+      print-color-adjust: exact !important;
+    }
+    .svg-logo { width: 2cm; height: 1.1cm; margin-bottom: 2px; }
+
+    .footer-text { text-align: center; line-height: 1.15; }
+    .footer-restobar {
+      font-family: 'Playfair Display', serif;
+      font-size: 9px; font-style: italic;
+      color: #2a3050; letter-spacing: 3px; text-transform: uppercase;
+    }
+    .footer-tinku {
+      font-family: 'Playfair Display', serif;
+      font-size: 16px; font-weight: 700;
+      color: #1a2040; letter-spacing: 5px; text-transform: uppercase;
+      line-height: 1;
+    }
+
     @media print {
       body { background: white !important; }
       .print-bar, .spacer { display: none !important; }
       .etiqueta {
+        -webkit-print-color-adjust: exact !important;
+        print-color-adjust: exact !important;
+      }
+      .overlay-top, .overlay-bottom {
         -webkit-print-color-adjust: exact !important;
         print-color-adjust: exact !important;
       }
@@ -132,7 +218,7 @@ async function buildPrintHTML(drinks: string[], copiesEach: number): Promise<str
   <div class="print-bar">
     <div>
       <div class="print-bar-title">ETIQUETAS TINKUBAR</div>
-      <div class="print-bar-hint">Destino: "Guardar como PDF" · ✅ Activar "Gráficos de fondo" · Márgenes: Mínimos</div>
+      <div class="print-bar-hint">Destino: "Guardar como PDF" · ✅ Activar "Gráficos de fondo"</div>
     </div>
     <button class="btn-print" onclick="window.print()">⬇ Guardar PDF</button>
   </div>
@@ -144,16 +230,13 @@ async function buildPrintHTML(drinks: string[], copiesEach: number): Promise<str
 
   <script>
     document.fonts.ready.then(function() {
-      setTimeout(function() { window.print(); }, 800);
+      setTimeout(function() { window.print(); }, 900);
     });
   </script>
 </body>
 </html>`;
 }
 
-/* ─────────────────────────────────────────────────────────────
-   Props y componente botón
-   ───────────────────────────────────────────────────────────── */
 interface ExportEtiquetasProps {
   drinks?: string[];
   copiesEach?: number;

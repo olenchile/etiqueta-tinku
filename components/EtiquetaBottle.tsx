@@ -3,9 +3,9 @@
 import { forwardRef } from "react";
 
 /* ─────────────────────────────────────────────────────────────
-   Etiqueta Tinkubar — imagen original + overlay tipográfico
-   El dibujo del limón NO se modifica.
-   Solo se mejoran: texto "PISCO SOUR" y logo "Restobar TINKU"
+   Etiqueta Tinkubar — etiqueta_2.jpeg (imagen limpia sin texto)
+   + overlay tipográfico premium con IM Fell English
+   + logo SVG oficial Tinku
    ───────────────────────────────────────────────────────────── */
 
 interface EtiquetaBottleProps {
@@ -26,11 +26,11 @@ const EtiquetaBottle = forwardRef<HTMLDivElement, EtiquetaBottleProps>(
     return (
       <div
         style={{
-          position: "relative",
-          display: "inline-flex",
-          flexDirection: "column",
-          alignItems: "center",
-          gap: "8px",
+          position:       "relative",
+          display:        "inline-flex",
+          flexDirection:  "column",
+          alignItems:     "center",
+          gap:            "8px",
         }}
       >
         {/* ── Línea de corte (troquel oval) ── */}
@@ -38,17 +38,17 @@ const EtiquetaBottle = forwardRef<HTMLDivElement, EtiquetaBottleProps>(
           <div
             className="no-print"
             style={{
-              position:     "absolute",
-              inset:        "-4px",
-              borderRadius: "50%",
-              border:       "1.5px dashed rgba(196,98,45,0.5)",
+              position:      "absolute",
+              inset:         "-5px",
+              borderRadius:  "50%",
+              border:        "1.5px dashed rgba(196,98,45,0.45)",
               pointerEvents: "none",
-              zIndex:       20,
+              zIndex:        20,
             }}
           />
         )}
 
-        {/* ── Contenedor oval ── */}
+        {/* ── Contenedor oval principal ── */}
         <div
           ref={ref}
           data-etiqueta="true"
@@ -58,12 +58,13 @@ const EtiquetaBottle = forwardRef<HTMLDivElement, EtiquetaBottleProps>(
             borderRadius: "50%",
             overflow:     "hidden",
             position:     "relative",
-            boxShadow:    "0 6px 32px rgba(0,0,0,0.45), 0 2px 8px rgba(200,169,110,0.2)",
+            boxShadow:    "0 8px 40px rgba(0,0,0,0.5), 0 2px 10px rgba(180,150,90,0.25)",
             WebkitPrintColorAdjust: "exact",
             printColorAdjust:       "exact",
           } as React.CSSProperties}
         >
-          {/* ── Imagen original del limón (sin modificar) ── */}
+          {/* ── Imagen base: ilustración acuarela del limón ── */}
+          {/* objectPosition ajustado para recortar barras negras del screenshot */}
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
             src={imageSrc}
@@ -74,129 +75,153 @@ const EtiquetaBottle = forwardRef<HTMLDivElement, EtiquetaBottleProps>(
               width:          "100%",
               height:         "100%",
               objectFit:      "cover",
-              objectPosition: "center center",
+              objectPosition: "center 22%",
               display:        "block",
               WebkitPrintColorAdjust: "exact",
               printColorAdjust:       "exact",
             } as React.CSSProperties}
           />
 
-          {/* ── OVERLAY: mejora tipográfica sobre la imagen ── */}
-          {/* Cubre solo las zonas de texto, no el limón */}
-
-          {/* Zona superior: reemplaza "PISCO SOUR" con tipografía premium */}
+          {/* ══════════════════════════════════════════════════
+              OVERLAY SUPERIOR — "PISCO SOUR" tipografía premium
+              Zona crema/blanca libre en la parte alta del oval
+              ══════════════════════════════════════════════════ */}
           <div
             style={{
-              position:   "absolute",
-              top:        0,
-              left:       0,
-              right:      0,
-              height:     "28%",
-              display:    "flex",
-              alignItems: "center",
+              position:       "absolute",
+              top:            0,
+              left:           0,
+              right:          0,
+              height:         "24%",
+              display:        "flex",
+              alignItems:     "center",
               justifyContent: "center",
-              /* Gradiente sutil para cubrir el texto original */
-              background: "linear-gradient(to bottom, rgba(242,237,224,0.92) 0%, rgba(242,237,224,0.75) 70%, transparent 100%)",
+              /* Sin gradiente opaco — texto directo sobre el fondo crema natural */
               WebkitPrintColorAdjust: "exact",
               printColorAdjust:       "exact",
             } as React.CSSProperties}
           >
-            {/* Texto curvo SVG premium */}
+            {/* Texto curvo SVG — IM Fell English italic */}
             <svg
-              viewBox="0 0 200 70"
-              style={{ width: "90%", height: "auto", overflow: "visible" }}
+              viewBox="0 0 220 80"
+              style={{ width: "88%", height: "auto", overflow: "visible" }}
             >
               <defs>
-                <path id="arcLabel" d="M 15,58 A 85,85 0 0,1 185,58"/>
-                {/* Sombra de texto */}
-                <filter id="textShadow" x="-5%" y="-5%" width="110%" height="110%">
-                  <feDropShadow dx="0" dy="1" stdDeviation="1" floodColor="rgba(0,0,0,0.15)"/>
+                {/* Arco suave para el texto curvo */}
+                <path id="arcTop" d="M 20,68 A 90,90 0 0,1 200,68" />
+                {/* Sombra muy sutil para legibilidad */}
+                <filter id="softShadow" x="-10%" y="-10%" width="120%" height="120%">
+                  <feDropShadow dx="0" dy="0.5" stdDeviation="0.8"
+                    floodColor="rgba(255,255,255,0.9)" floodOpacity="1"/>
+                </filter>
+                <filter id="textGlow" x="-10%" y="-10%" width="120%" height="120%">
+                  <feDropShadow dx="0" dy="1" stdDeviation="1.5"
+                    floodColor="rgba(0,0,0,0.2)" floodOpacity="1"/>
                 </filter>
               </defs>
-              {/* Texto principal curvo */}
+
+              {/* Halo blanco detrás del texto para legibilidad */}
               <text
-                fontFamily="'Playfair Display', 'Times New Roman', Georgia, serif"
-                fontSize="24"
-                fontWeight="700"
+                fontFamily="'IM Fell English', 'Playfair Display', 'Times New Roman', Georgia, serif"
+                fontSize="22"
+                fontWeight="400"
                 fontStyle="italic"
-                fill="#1a2040"
-                letterSpacing="2"
-                filter="url(#textShadow)"
+                fill="rgba(255,255,255,0.85)"
+                letterSpacing="1.5"
+                filter="url(#softShadow)"
+                strokeWidth="4"
+                stroke="rgba(255,255,255,0.7)"
+                paintOrder="stroke"
               >
-                <textPath href="#arcLabel" startOffset="50%" textAnchor="middle">
+                <textPath href="#arcTop" startOffset="50%" textAnchor="middle">
+                  {label}
+                </textPath>
+              </text>
+
+              {/* Texto principal — color oscuro elegante */}
+              <text
+                fontFamily="'IM Fell English', 'Playfair Display', 'Times New Roman', Georgia, serif"
+                fontSize="22"
+                fontWeight="400"
+                fontStyle="italic"
+                fill="#1c2340"
+                letterSpacing="1.5"
+                filter="url(#textGlow)"
+              >
+                <textPath href="#arcTop" startOffset="50%" textAnchor="middle">
                   {label}
                 </textPath>
               </text>
             </svg>
           </div>
 
-          {/* Zona inferior: reemplaza logo y "Restobar TINKU" */}
+          {/* ══════════════════════════════════════════════════
+              OVERLAY INFERIOR — Logo SVG oficial Tinku + nombre
+              Zona sobre la mancha azul acuarela (parte baja)
+              ══════════════════════════════════════════════════ */}
           <div
             style={{
-              position:   "absolute",
-              bottom:     0,
-              left:       0,
-              right:      0,
-              height:     "26%",
-              display:    "flex",
-              flexDirection: "column",
-              alignItems: "center",
+              position:       "absolute",
+              bottom:         0,
+              left:           0,
+              right:          0,
+              height:         "30%",
+              display:        "flex",
+              flexDirection:  "column",
+              alignItems:     "center",
               justifyContent: "flex-end",
-              paddingBottom: "6%",
-              /* Gradiente para cubrir el texto/logo original */
-              background: "linear-gradient(to top, rgba(200,220,240,0.88) 0%, rgba(200,220,240,0.65) 60%, transparent 100%)",
+              paddingBottom:  "7%",
               WebkitPrintColorAdjust: "exact",
               printColorAdjust:       "exact",
             } as React.CSSProperties}
           >
-            {/* Logo Tinku SVG rediseñado — figura meditando con taza */}
-            <svg
-              viewBox="0 0 80 44"
-              style={{ width: "2cm", height: "1.1cm", marginBottom: "2px" }}
-            >
-              {/* Taza con vapor */}
-              <rect x="28" y="22" width="24" height="14" rx="2"
-                fill="none" stroke="#1a2040" strokeWidth="1.6"/>
-              <path d="M52 25 Q58 25 58 30 Q58 35 52 35"
-                fill="none" stroke="#1a2040" strokeWidth="1.4"/>
-              {/* Vapor */}
-              <path d="M34 20 Q33 16 35 13" stroke="#1a2040" strokeWidth="1.1"
-                fill="none" strokeLinecap="round"/>
-              <path d="M40 19 Q39 15 41 12" stroke="#1a2040" strokeWidth="1.1"
-                fill="none" strokeLinecap="round"/>
-              <path d="M46 20 Q45 16 47 13" stroke="#1a2040" strokeWidth="1.1"
-                fill="none" strokeLinecap="round"/>
-              {/* Figura sentada */}
-              <circle cx="14" cy="14" r="5" fill="none" stroke="#1a2040" strokeWidth="1.4"/>
-              <path d="M14 19 L14 30 Q14 33 10 35"
-                stroke="#1a2040" strokeWidth="1.4" fill="none" strokeLinecap="round"/>
-              <path d="M14 24 L20 22"
-                stroke="#1a2040" strokeWidth="1.4" fill="none" strokeLinecap="round"/>
-              <path d="M14 30 L18 37"
-                stroke="#1a2040" strokeWidth="1.4" fill="none" strokeLinecap="round"/>
-            </svg>
+            {/* Logo SVG oficial Tinku — escalado y coloreado */}
+            {/* El SVG original es 1536×1024 con paths complejos */}
+            {/* Usamos <img> con el SVG para máxima fidelidad */}
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src="/logo-tinku.svg"
+              alt="Logo Tinku"
+              style={{
+                width:           "2.8cm",
+                height:          "auto",
+                maxHeight:       "1.4cm",
+                objectFit:       "contain",
+                marginBottom:    "3px",
+                filter:          "brightness(0) invert(0) sepia(1) saturate(0) brightness(0.15)",
+                WebkitPrintColorAdjust: "exact",
+                printColorAdjust:       "exact",
+              } as React.CSSProperties}
+            />
 
-            {/* Texto "Restobar TINKU" rediseñado */}
-            <div style={{ textAlign: "center", lineHeight: 1.15 }}>
-              <div style={{
-                fontFamily:    "'Playfair Display', Georgia, serif",
-                fontSize:      "9px",
-                fontStyle:     "italic",
-                color:         "#2a3050",
-                letterSpacing: "3px",
-                textTransform: "uppercase",
-              }}>
+            {/* Nombre del restobar */}
+            <div style={{ textAlign: "center", lineHeight: 1.1 }}>
+              <div
+                style={{
+                  fontFamily:    "'IM Fell English', 'Playfair Display', Georgia, serif",
+                  fontSize:      "7.5px",
+                  fontStyle:     "italic",
+                  color:         "#2a3050",
+                  letterSpacing: "3.5px",
+                  textTransform: "uppercase",
+                  textShadow:    "0 0 6px rgba(255,255,255,0.8)",
+                }}
+              >
                 Restobar
               </div>
-              <div style={{
-                fontFamily:    "'Playfair Display', Georgia, serif",
-                fontSize:      "16px",
-                fontWeight:    700,
-                color:         "#1a2040",
-                letterSpacing: "5px",
-                textTransform: "uppercase",
-                lineHeight:    1,
-              }}>
+              <div
+                style={{
+                  fontFamily:    "'IM Fell English', 'Playfair Display', Georgia, serif",
+                  fontSize:      "15px",
+                  fontWeight:    400,
+                  fontStyle:     "normal",
+                  color:         "#1a2040",
+                  letterSpacing: "6px",
+                  textTransform: "uppercase",
+                  lineHeight:    1,
+                  textShadow:    "0 0 8px rgba(255,255,255,0.9), 0 1px 3px rgba(0,0,0,0.2)",
+                }}
+              >
                 TINKU
               </div>
             </div>
@@ -208,8 +233,9 @@ const EtiquetaBottle = forwardRef<HTMLDivElement, EtiquetaBottleProps>(
           <div
             className="no-print"
             style={{
-              fontFamily:    "var(--font-playfair), serif",
+              fontFamily:    "'IM Fell English', var(--font-playfair), serif",
               fontSize:      "10px",
+              fontStyle:     "italic",
               letterSpacing: "2px",
               color:         "#8a7a5a",
               textTransform: "uppercase",

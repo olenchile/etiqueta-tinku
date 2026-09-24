@@ -3,8 +3,10 @@
 import { forwardRef } from "react";
 
 /* ─────────────────────────────────────────────────────────────
-   Etiqueta Tinkubar — etiqueta_2.jpeg (imagen limpia sin texto)
-   Diseño: texto PISCO SOUR arriba + logo Tinku abajo
+   Etiqueta Tinkubar — etiqueta_2.jpeg recortada (738×1106px)
+   Imagen limpia sin barras negras.
+   Overlay: "PISCO SOUR" arriba + logo SVG Tinku abajo.
+   El logo ya incluye "Restobar TINKU" como paths vectoriales.
    ───────────────────────────────────────────────────────────── */
 
 interface EtiquetaBottleProps {
@@ -62,9 +64,7 @@ const EtiquetaBottle = forwardRef<HTMLDivElement, EtiquetaBottleProps>(
             printColorAdjust:       "exact",
           } as React.CSSProperties}
         >
-          {/* ── Imagen base: ilustración acuarela del limón ── */}
-          {/* La imagen tiene barras negras arriba/abajo (screenshot).
-              Usamos objectPosition para centrar el oval de la ilustración */}
+          {/* ── Imagen base: oval del limón (sin barras negras) ── */}
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
             src={imageSrc}
@@ -75,7 +75,7 @@ const EtiquetaBottle = forwardRef<HTMLDivElement, EtiquetaBottleProps>(
               width:          "100%",
               height:         "100%",
               objectFit:      "cover",
-              objectPosition: "center 30%",
+              objectPosition: "center center",
               display:        "block",
               WebkitPrintColorAdjust: "exact",
               printColorAdjust:       "exact",
@@ -84,44 +84,43 @@ const EtiquetaBottle = forwardRef<HTMLDivElement, EtiquetaBottleProps>(
 
           {/* ══════════════════════════════════════════════════
               ZONA SUPERIOR — "PISCO SOUR"
-              Fondo crema/blanco natural de la imagen
-              Texto grande con IM Fell English italic
+              Fondo crema/blanco natural del oval (parte alta)
               ══════════════════════════════════════════════════ */}
           <div
             style={{
               position:       "absolute",
-              top:            "4%",
-              left:           "10%",
-              right:          "10%",
+              top:            "5%",
+              left:           0,
+              right:          0,
               display:        "flex",
               flexDirection:  "column",
               alignItems:     "center",
-              gap:            "2px",
+              gap:            "4px",
               WebkitPrintColorAdjust: "exact",
               printColorAdjust:       "exact",
             } as React.CSSProperties}
           >
-            {/* Línea decorativa superior */}
+            {/* Línea decorativa */}
             <div style={{
-              width:           "60%",
-              height:          "1px",
-              background:      "rgba(28,35,64,0.35)",
-              marginBottom:    "4px",
+              width:      "50%",
+              height:     "1px",
+              background: "rgba(28,35,64,0.45)",
             }} />
 
-            {/* Texto principal PISCO SOUR */}
+            {/* Texto PISCO SOUR — IM Fell English italic */}
             <div
               style={{
                 fontFamily:    "'IM Fell English', 'Playfair Display', Georgia, serif",
-                fontSize:      "22px",
+                fontSize:      "19px",
                 fontStyle:     "italic",
                 fontWeight:    400,
                 color:         "#1c2340",
-                letterSpacing: "3px",
+                letterSpacing: "4px",
                 textTransform: "uppercase",
                 textAlign:     "center",
                 lineHeight:    1,
-                textShadow:    "0 1px 4px rgba(255,255,255,0.9), 0 0 12px rgba(255,255,255,0.7)",
+                /* Halo blanco para legibilidad */
+                textShadow:    "0 0 10px rgba(255,255,255,1), 0 0 20px rgba(255,255,255,0.8), 0 1px 2px rgba(0,0,0,0.08)",
                 WebkitPrintColorAdjust: "exact",
                 printColorAdjust:       "exact",
               } as React.CSSProperties}
@@ -129,84 +128,47 @@ const EtiquetaBottle = forwardRef<HTMLDivElement, EtiquetaBottleProps>(
               {label}
             </div>
 
-            {/* Línea decorativa inferior */}
+            {/* Línea decorativa */}
             <div style={{
-              width:        "60%",
-              height:       "1px",
-              background:   "rgba(28,35,64,0.35)",
-              marginTop:    "4px",
+              width:      "50%",
+              height:     "1px",
+              background: "rgba(28,35,64,0.45)",
             }} />
           </div>
 
           {/* ══════════════════════════════════════════════════
-              ZONA INFERIOR — Logo Tinku + "Restobar TINKU"
-              Sobre la mancha azul acuarela
+              ZONA INFERIOR — Logo SVG oficial Tinku
+              El SVG logo_tinku2026_clean ya incluye el texto
+              "Restobar TINKU" como paths vectoriales.
+              viewBox: 0 0 1024 683 — fill: #1c2340 directo
               ══════════════════════════════════════════════════ */}
           <div
             style={{
               position:       "absolute",
-              bottom:         "4%",
+              bottom:         "5%",
               left:           0,
               right:          0,
               display:        "flex",
-              flexDirection:  "column",
+              justifyContent: "center",
               alignItems:     "center",
-              gap:            "2px",
               WebkitPrintColorAdjust: "exact",
               printColorAdjust:       "exact",
             } as React.CSSProperties}
           >
-            {/* Logo SVG oficial Tinku */}
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
               src="/logo-tinku.svg"
               alt="Logo Tinku"
               style={{
-                width:           "3.2cm",
-                height:          "auto",
-                maxHeight:       "1.6cm",
-                objectFit:       "contain",
-                /* Convierte el SVG a color oscuro navy */
-                filter:          "brightness(0) saturate(100%) invert(12%) sepia(30%) saturate(800%) hue-rotate(200deg) brightness(0.4)",
+                width:     "3.5cm",
+                height:    "auto",
+                maxHeight: "2.3cm",
+                objectFit: "contain",
+                /* Sin filtro — el SVG ya tiene fill:#1c2340 */
                 WebkitPrintColorAdjust: "exact",
                 printColorAdjust:       "exact",
               } as React.CSSProperties}
             />
-
-            {/* Texto "Restobar TINKU" */}
-            <div style={{ textAlign: "center", lineHeight: 1.15 }}>
-              <div
-                style={{
-                  fontFamily:    "'IM Fell English', 'Playfair Display', Georgia, serif",
-                  fontSize:      "7px",
-                  fontStyle:     "italic",
-                  color:         "#1c2340",
-                  letterSpacing: "4px",
-                  textTransform: "uppercase",
-                  textShadow:    "0 0 8px rgba(255,255,255,0.8)",
-                  WebkitPrintColorAdjust: "exact",
-                  printColorAdjust:       "exact",
-                } as React.CSSProperties}
-              >
-                Restobar
-              </div>
-              <div
-                style={{
-                  fontFamily:    "'IM Fell English', 'Playfair Display', Georgia, serif",
-                  fontSize:      "14px",
-                  fontWeight:    400,
-                  color:         "#1c2340",
-                  letterSpacing: "7px",
-                  textTransform: "uppercase",
-                  lineHeight:    1,
-                  textShadow:    "0 0 10px rgba(255,255,255,0.9), 0 1px 3px rgba(0,0,0,0.15)",
-                  WebkitPrintColorAdjust: "exact",
-                  printColorAdjust:       "exact",
-                } as React.CSSProperties}
-              >
-                TINKU
-              </div>
-            </div>
           </div>
         </div>
 

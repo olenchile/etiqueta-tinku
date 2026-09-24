@@ -42,13 +42,9 @@ async function buildPrintHTML(drinks: string[], copiesEach: number): Promise<str
           <div class="deco-line"></div>
         </div>
 
-        <!-- Zona inferior: logo + nombre -->
+        <!-- Zona inferior: logo SVG oficial (ya incluye texto Restobar TINKU) -->
         <div class="overlay-bottom">
           <img src="${logoDataURI}" alt="Logo Tinku" class="logo-img" />
-          <div class="footer-text">
-            <div class="footer-restobar">Restobar</div>
-            <div class="footer-tinku">TINKU</div>
-          </div>
         </div>
       </div>
     </div>`;
@@ -153,34 +149,20 @@ async function buildPrintHTML(drinks: string[], copiesEach: number): Promise<str
       text-shadow: 0 1px 4px rgba(255,255,255,0.9), 0 0 12px rgba(255,255,255,0.7);
     }
 
-    /* Zona inferior — logo + nombre */
+    /* Zona inferior — logo SVG oficial (ya incluye texto Restobar TINKU) */
     .overlay-bottom {
-      position: absolute; bottom: 4%; left: 0; right: 0;
-      display: flex; flex-direction: column;
-      align-items: center; gap: 2px;
+      position: absolute; bottom: 5%; left: 0; right: 0;
+      display: flex;
+      align-items: center; justify-content: center;
       -webkit-print-color-adjust: exact !important;
       print-color-adjust: exact !important;
     }
     .logo-img {
-      width: 3.2cm; height: auto; max-height: 1.6cm;
+      width: 3.5cm; height: auto; max-height: 2.3cm;
       object-fit: contain;
-      filter: brightness(0) saturate(100%) invert(12%) sepia(30%) saturate(800%) hue-rotate(200deg) brightness(0.4);
+      /* Sin filtro — el SVG ya tiene fill:#1c2340 */
       -webkit-print-color-adjust: exact !important;
       print-color-adjust: exact !important;
-    }
-    .footer-text { text-align: center; line-height: 1.15; }
-    .footer-restobar {
-      font-family: 'IM Fell English', serif;
-      font-size: 7px; font-style: italic;
-      color: #1c2340; letter-spacing: 4px; text-transform: uppercase;
-      text-shadow: 0 0 8px rgba(255,255,255,0.8);
-    }
-    .footer-tinku {
-      font-family: 'IM Fell English', serif;
-      font-size: 14px; font-weight: 400;
-      color: #1c2340; letter-spacing: 7px; text-transform: uppercase;
-      line-height: 1;
-      text-shadow: 0 0 10px rgba(255,255,255,0.9), 0 1px 3px rgba(0,0,0,0.15);
     }
 
     @media print {

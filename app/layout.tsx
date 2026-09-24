@@ -34,12 +34,12 @@ const imFell = IM_Fell_English({
 });
 
 export const metadata: Metadata = {
-  title: "Tinkubar — Carta Digital",
-  description: "Carta completa del restaurante Tinkubar.cl — Desayunos, platos, postres y bebidas.",
-  keywords: ["Tinkubar", "restaurante", "menú", "carta", "Santiago", "Chile"],
+  title: "Tinkubar — Etiquetas Botella 330cc",
+  description: "Diseñador de etiquetas para botella Puyehue 330cc — Tinkubar.cl",
+  keywords: ["Tinkubar", "etiqueta", "botella", "330cc", "Puyehue", "Santiago", "Chile"],
   openGraph: {
-    title: "Tinkubar — Carta Digital",
-    description: "Carta completa del restaurante Tinkubar.cl",
+    title: "Tinkubar — Etiquetas Botella",
+    description: "Etiquetas personalizadas para botella Puyehue 330cc — Tinkubar.cl",
     type: "website",
     locale: "es_CL",
   },

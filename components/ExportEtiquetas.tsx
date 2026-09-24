@@ -6,8 +6,7 @@ import { Download, Loader2, FileText } from "lucide-react";
 
 /* ─────────────────────────────────────────────────────────────
    Exporta etiquetas con etiqueta_2.jpeg (imagen limpia)
-   + overlay tipográfico IM Fell English
-   + logo SVG oficial Tinku como data-URI
+   + texto PISCO SOUR arriba + logo Tinku abajo
    ───────────────────────────────────────────────────────────── */
 
 async function toDataURI(url: string): Promise<string> {
@@ -26,55 +25,24 @@ async function toDataURI(url: string): Promise<string> {
 }
 
 async function buildPrintHTML(drinks: string[], copiesEach: number): Promise<string> {
-  /* ── Convertir imagen y logo a data-URI para blob ── */
   const [imgDataURI, logoDataURI] = await Promise.all([
     toDataURI("/etiqueta-ref.jpeg"),
     toDataURI("/logo-tinku.svg"),
   ]);
 
-  /* ── HTML de una etiqueta ── */
-  const etiquetaHTML = (drink: string) => {
-    const id = drink.replace(/\s+/g, "_");
-    return `
+  const etiquetaHTML = (drink: string) => `
     <div class="etiqueta-wrap">
       <div class="etiqueta">
-
-        <!-- Imagen base: ilustración acuarela del limón -->
         <img src="${imgDataURI}" alt="Etiqueta" class="etiqueta-img" />
 
-        <!-- Overlay superior: "PISCO SOUR" curvo con IM Fell English -->
+        <!-- Zona superior: PISCO SOUR -->
         <div class="overlay-top">
-          <svg viewBox="0 0 220 80" class="svg-label" overflow="visible">
-            <defs>
-              <path id="arc_${id}" d="M 20,68 A 90,90 0 0,1 200,68"/>
-              <filter id="halo_${id}" x="-10%" y="-10%" width="120%" height="120%">
-                <feDropShadow dx="0" dy="0.5" stdDeviation="0.8"
-                  flood-color="rgba(255,255,255,0.9)" flood-opacity="1"/>
-              </filter>
-              <filter id="glow_${id}" x="-10%" y="-10%" width="120%" height="120%">
-                <feDropShadow dx="0" dy="1" stdDeviation="1.5"
-                  flood-color="rgba(0,0,0,0.2)" flood-opacity="1"/>
-              </filter>
-            </defs>
-            <!-- Halo blanco para legibilidad -->
-            <text font-family="'IM Fell English', 'Playfair Display', 'Times New Roman', Georgia, serif"
-              font-size="22" font-weight="400" font-style="italic"
-              fill="rgba(255,255,255,0.85)" letter-spacing="1.5"
-              filter="url(#halo_${id})"
-              stroke="rgba(255,255,255,0.7)" stroke-width="4" paint-order="stroke">
-              <textPath href="#arc_${id}" startOffset="50%" text-anchor="middle">${drink}</textPath>
-            </text>
-            <!-- Texto principal oscuro -->
-            <text font-family="'IM Fell English', 'Playfair Display', 'Times New Roman', Georgia, serif"
-              font-size="22" font-weight="400" font-style="italic"
-              fill="#1c2340" letter-spacing="1.5"
-              filter="url(#glow_${id})">
-              <textPath href="#arc_${id}" startOffset="50%" text-anchor="middle">${drink}</textPath>
-            </text>
-          </svg>
+          <div class="deco-line"></div>
+          <div class="label-text">${drink}</div>
+          <div class="deco-line"></div>
         </div>
 
-        <!-- Overlay inferior: logo Tinku + nombre -->
+        <!-- Zona inferior: logo + nombre -->
         <div class="overlay-bottom">
           <img src="${logoDataURI}" alt="Logo Tinku" class="logo-img" />
           <div class="footer-text">
@@ -82,10 +50,8 @@ async function buildPrintHTML(drinks: string[], copiesEach: number): Promise<str
             <div class="footer-tinku">TINKU</div>
           </div>
         </div>
-
       </div>
     </div>`;
-  };
 
   const allLabels = drinks
     .flatMap((d) => Array.from({ length: copiesEach }, () => etiquetaHTML(d)))
@@ -112,7 +78,6 @@ async function buildPrintHTML(drinks: string[], copiesEach: number): Promise<str
       font-family: 'IM Fell English', 'Playfair Display', Georgia, serif;
     }
 
-    /* ── Barra de impresión ── */
     .print-bar {
       position: fixed; top: 0; left: 0; right: 0;
       background: rgba(26,18,8,0.97);
@@ -121,11 +86,8 @@ async function buildPrintHTML(drinks: string[], copiesEach: number): Promise<str
       display: flex; align-items: center; justify-content: space-between;
       z-index: 9999;
     }
-    .print-bar-title {
-      font-size: 14px; font-weight: 700;
-      letter-spacing: 4px; color: #d4a017;
-    }
-    .print-bar-hint { font-size: 10px; color: #8a7a5a; margin-top: 2px; }
+    .print-bar-title { font-size: 14px; font-weight: 700; letter-spacing: 4px; color: #d4a017; }
+    .print-bar-hint  { font-size: 10px; color: #8a7a5a; margin-top: 2px; }
     .btn-print {
       background: linear-gradient(135deg, #c4622d, #a8501e) !important;
       -webkit-print-color-adjust: exact !important;
@@ -137,7 +99,6 @@ async function buildPrintHTML(drinks: string[], copiesEach: number): Promise<str
     }
     .spacer { height: 60px; }
 
-    /* ── Grid de etiquetas ── */
     .grid-etiquetas {
       display: flex; flex-wrap: wrap;
       gap: 8mm; padding: 4mm;
@@ -148,13 +109,12 @@ async function buildPrintHTML(drinks: string[], copiesEach: number): Promise<str
       page-break-inside: avoid; break-inside: avoid;
     }
 
-    /* ── Etiqueta oval 7cm × 10cm ── */
+    /* Etiqueta oval 7cm × 10cm */
     .etiqueta {
       position: relative;
       width: 7cm; height: 10cm;
       border-radius: 50%;
       overflow: hidden;
-      box-shadow: 0 8px 40px rgba(0,0,0,0.5);
       -webkit-print-color-adjust: exact !important;
       print-color-adjust: exact !important;
     }
@@ -164,66 +124,68 @@ async function buildPrintHTML(drinks: string[], copiesEach: number): Promise<str
       position: absolute; inset: 0;
       width: 100%; height: 100%;
       object-fit: cover;
-      object-position: center 22%;
+      object-position: center 30%;
       display: block;
       -webkit-print-color-adjust: exact !important;
       print-color-adjust: exact !important;
     }
 
-    /* Overlay superior — zona libre para texto */
+    /* Zona superior — texto PISCO SOUR */
     .overlay-top {
-      position: absolute; top: 0; left: 0; right: 0;
-      height: 24%;
-      display: flex; align-items: center; justify-content: center;
-      -webkit-print-color-adjust: exact !important;
-      print-color-adjust: exact !important;
-    }
-    .svg-label { width: 88%; height: auto; }
-
-    /* Overlay inferior — zona sobre mancha azul */
-    .overlay-bottom {
-      position: absolute; bottom: 0; left: 0; right: 0;
-      height: 30%;
+      position: absolute; top: 4%; left: 10%; right: 10%;
       display: flex; flex-direction: column;
-      align-items: center; justify-content: flex-end;
-      padding-bottom: 7%;
+      align-items: center; gap: 4px;
       -webkit-print-color-adjust: exact !important;
       print-color-adjust: exact !important;
     }
+    .deco-line {
+      width: 60%; height: 1px;
+      background: rgba(28,35,64,0.35) !important;
+      -webkit-print-color-adjust: exact !important;
+      print-color-adjust: exact !important;
+    }
+    .label-text {
+      font-family: 'IM Fell English', 'Playfair Display', Georgia, serif;
+      font-size: 22px; font-style: italic; font-weight: 400;
+      color: #1c2340;
+      letter-spacing: 3px; text-transform: uppercase;
+      text-align: center; line-height: 1;
+      text-shadow: 0 1px 4px rgba(255,255,255,0.9), 0 0 12px rgba(255,255,255,0.7);
+    }
 
-    /* Logo SVG oficial Tinku */
+    /* Zona inferior — logo + nombre */
+    .overlay-bottom {
+      position: absolute; bottom: 4%; left: 0; right: 0;
+      display: flex; flex-direction: column;
+      align-items: center; gap: 2px;
+      -webkit-print-color-adjust: exact !important;
+      print-color-adjust: exact !important;
+    }
     .logo-img {
-      width: 2.8cm; height: auto; max-height: 1.4cm;
+      width: 3.2cm; height: auto; max-height: 1.6cm;
       object-fit: contain;
-      margin-bottom: 3px;
-      filter: brightness(0) invert(0) sepia(1) saturate(0) brightness(0.15);
+      filter: brightness(0) saturate(100%) invert(12%) sepia(30%) saturate(800%) hue-rotate(200deg) brightness(0.4);
       -webkit-print-color-adjust: exact !important;
       print-color-adjust: exact !important;
     }
-
-    /* Texto del footer */
-    .footer-text { text-align: center; line-height: 1.1; }
+    .footer-text { text-align: center; line-height: 1.15; }
     .footer-restobar {
       font-family: 'IM Fell English', serif;
-      font-size: 7.5px; font-style: italic;
-      color: #2a3050; letter-spacing: 3.5px; text-transform: uppercase;
-      text-shadow: 0 0 6px rgba(255,255,255,0.8);
+      font-size: 7px; font-style: italic;
+      color: #1c2340; letter-spacing: 4px; text-transform: uppercase;
+      text-shadow: 0 0 8px rgba(255,255,255,0.8);
     }
     .footer-tinku {
       font-family: 'IM Fell English', serif;
-      font-size: 15px; font-weight: 400;
-      color: #1a2040; letter-spacing: 6px; text-transform: uppercase;
+      font-size: 14px; font-weight: 400;
+      color: #1c2340; letter-spacing: 7px; text-transform: uppercase;
       line-height: 1;
-      text-shadow: 0 0 8px rgba(255,255,255,0.9), 0 1px 3px rgba(0,0,0,0.2);
+      text-shadow: 0 0 10px rgba(255,255,255,0.9), 0 1px 3px rgba(0,0,0,0.15);
     }
 
     @media print {
       body { background: white !important; }
       .print-bar, .spacer { display: none !important; }
-      .etiqueta {
-        -webkit-print-color-adjust: exact !important;
-        print-color-adjust: exact !important;
-      }
     }
   </style>
 </head>

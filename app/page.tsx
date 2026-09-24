@@ -195,7 +195,7 @@ export default function Home() {
               }}>
                 {drink}
               </span>
-              <EtiquetaBottle drink={drink} showCutLines />
+              <EtiquetaBottle label={drink} showCutLines />
             </motion.div>
           ))}
         </div>
